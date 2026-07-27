@@ -1,0 +1,21 @@
+# Virtual environment (WAJIB)
+vela_venv/
+.venv/
+venv/
+env/
+
+# Cache Python
+__pycache__/
+*.pyc
+*.pyo
+
+# Hasil kompilasi embedded
+*.o
+*.elf
+*.bin
+*.hex
+build/
+
+# Folder editor
+.vscode/
+.idea/

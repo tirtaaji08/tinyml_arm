@@ -1,0 +1,6 @@
+[submodule "third_party/ml-embedded-evaluation-kit"]
+	path = third_party/ml-embedded-evaluation-kit
+	url = https://gitlab.com/tirtaaji08/ml-embedded-evaluation-kit.git
+[submodule "third_party/Seeed_Grove_Vision_AI_Module_V2"]
+	path = third_party/Seeed_Grove_Vision_AI_Module_V2
+	url = https://github.com/tirtaaji08/Seeed_Grove_Vision_AI_Module_V2.git
