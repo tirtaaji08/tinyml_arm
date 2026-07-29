@@ -1,4 +1,4 @@
-# Laporan Proyek: 
+# Laporan Proyek 
 
 **Intern Name:** Tirta Aji Nugraha  
 **Topic:** ARM AI Wearable - HR (Heart Rate)   
@@ -24,29 +24,40 @@ Model KID-PPG dibangun di atas dataset publik bernama PPG-Dalia. Dataset ini dip
 **PREPROCESSING**   
 Preprocessing data untuk model KID-PPG dilakukan dalam dua tahap, yaitu tahap training dan tahap inferensi.
 ### 3.1 Tahap Training
-* **Adaptive Filtering:**  sebuah model filter linier (link ke repo i guess) dilatih berulang-ulang secara spesifik hingga 16.000 epoch sebelum proses training utama dimulai. Filter ini menggunakan manipulasi Fast Fourier Transform (FFT) untuk menganalisis spektrum frekuensi dan mengurangkan pola artefak pergerakan dari sinyal PPG mentah
-* **Augmentasi Data:** Untuk mencegah class imbalance di mana sebagian besar dataset merepresentasikan detak jantung saat rileks/duduk, terdapat tahap injeksi data sintetis dan probabilistic augmentation (data_generator_probabilistic_augmantation.py) serta pembuatan sampel detak jantung tinggi (data_generator_high_hr.py).
+* **Adaptive Filtering:**  sebuah model filter linier dilatih berulang-ulang secara spesifik hingga 16.000 epoch sebelum proses training utama dimulai. Filter ini menggunakan manipulasi Fast Fourier Transform (FFT) untuk menganalisis spektrum frekuensi dan mengurangkan pola artefak pergerakan dari sinyal PPG mentah
+* **Augmentasi Data:** Untuk mencegah class imbalance di mana sebagian besar dataset merepresentasikan detak jantung saat rileks/duduk, terdapat tahap injeksi data sintetis dan probabilistic augmentation serta pembuatan sampel detak jantung tinggi.
 ### 3.2 Tahap Inferensi
-* **Downsampling:** Model KID-PPG membutuhkan i
+* **Downsampling:**
 * **Z-Score Normalization:** Setiap segmen aktivitas diseragamkan magnitudonya dengan teknik Z-score. Proses ini mencabut rentang dinamik sinyal optik yang ekstrem dengan mengurangi nilai rata-rata dan membaginya dengan standar deviasi
 * **Buffering:**
 
 ## 4. Model
-![architecture](Images/Architecture.png)
-*Berikut adalah ringkasan data hasil simulasi/pengukuran:*
+![architecture](Images/Architecture.png)  
+**Parameters Count:**~112K Parameters  
+**Input Shape:**[N, 256, 2]  
+**Training Configuration:** 
+* Optimizer: Menggunakan Adam Optimizer, yang merupakan standar paling optimal dan stabil untuk mengarahkan konvergensi bobot pada arsitektur yang menggunakan attention mechanism.
 
-| Parameter | Target Spesifikasi | Hasil Pengukuran | Status |
-| :--- | :--- | :--- | :--- |
-| Tegangan Output | [Misal: 5V] | [...] | [...] |
-| Arus | [Misal: 1A] | [...] | [...] |
+* Loss Function: Untuk model utamanya (versi probabilistik), fungsi objektif yang digunakan adalah Negative Log-Likelihood (NLL). Model ini tidak memprediksi nilai mutlak dari detak jantung, melainkan memprediksi parameter distribusi (rata-rata/ mean dan standar deviasi) untuk memberikan estimasi sekaligus tingkat ketidakpastiannya.
+
+* Epochs: Terdapat dua fase iterasi dalam repositori ini:
+
+    * Fase Preprocessing: Filter adaptif dilatih dalam iterasi yang sangat masif, yakni hingga 16.000 epoch.
+
+    * Fase Training Utama: Pelatihan model deep learning-nya ditetapkan maksimal hingga 500 epoch per subjek (menggunakan metode Cross-Validation LOSO).
+
+* Batch Size: Ditetapkan secara eksplisit sebesar 128 atau 256 sampel dalam setiap iterasi pembaruan bobot, memberikan keseimbangan yang baik antara pemanfaatan memori GPU dan kehalusan gradien.
 
 ## 5. Results
-[Analisis data di atas. Apakah komponen bekerja sesuai ekspektasi? Jika ada kendala teknis (seperti *convergence error* pada SPICE atau fluktuasi tegangan), jelaskan di sini dan sebutkan langkah penyelesaiannya.]
+
 
 ## 6. Deployment
-[Ringkas hasil akhir dari proyek atau eksperimen ini. Sebutkan langkah apa yang perlu dilakukan selanjutnya untuk iterasi desain atau perbaikan.]
-
+    
 ### 6.1 Standart Metric Summary
+
+| Sensor | Model Arch | Input Shape | Params | MAC | Sram Used | Accuracy Metric | Cycles Total | Quantization |
+| :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
+| PPG | 1D-CNN 3 block | [1, 256, 2] | ~112K | 13,450,768 MAC | 26.91 KiB | MAE: 5.3 BPM | 629117 | INT8 |
 
 ### 6.2 Deployment Notes
 
