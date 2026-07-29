@@ -4,3 +4,6 @@
 [submodule "third_party/Seeed_Grove_Vision_AI_Module_V2"]
 	path = third_party/Seeed_Grove_Vision_AI_Module_V2
 	url = https://github.com/tirtaaji08/Seeed_Grove_Vision_AI_Module_V2.git
+[submodule "third_party/KID-PPG-Paper"]
+	path = third_party/KID-PPG-Paper
+	url = https://github.com/tirtaaji08/KID-PPG-Paper.git
