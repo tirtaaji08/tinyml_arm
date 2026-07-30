@@ -1,7 +1,7 @@
 # Laporan Proyek 
 
 
-**Intern Name:** Tirta Aji Nugraha  
+**Intern Name:** Tirta Aji Nugraha   
 **Topic:** ARM AI Wearable - HR (Heart Rate)   
 **Supervisor:** Muhammad Faudzan Abdullah  
 **Draft Status:** Draft  
@@ -54,7 +54,11 @@ Preprocessing data untuk model KID-PPG dilakukan dalam dua tahap, yaitu tahap tr
 * Batch Size: Ditetapkan secara eksplisit sebesar 128 atau 256 sampel dalam setiap iterasi pembaruan bobot, memberikan keseimbangan yang baik antara pemanfaatan memori GPU dan kehalusan gradien.
 
 ## 5. Results
-
+| Stage | MAE (BPM) | Catatan |
+| :--- | :--- | :---|
+| KID-PPG Original | 2.8 | Evaluasi via model_h5.predict() pada PPG-DaLiA |
+| After Pruning| 5.7 | Fine-tune 20 epoch pada mixed dataset |
+| After QAT | 5.3 | Fine-tune 10 epoch, partial quantization |  
 
 ## 6. Deployment
     
