@@ -1,5 +1,6 @@
 # Laporan Proyek 
 
+
 **Intern Name:** Tirta Aji Nugraha  
 **Topic:** ARM AI Wearable - HR (Heart Rate)   
 **Supervisor:** Muhammad Faudzan Abdullah  
@@ -9,6 +10,7 @@
 ---
 
 ## 1. Overview
+<div align="justify">
 Proyek ini bertujuan untuk mengimplementasikan model machine learning KID-PPG untuk mengestimasi detak jantung berdasarkan sinyal Photoplethysmography (PPG). Sensor yang digunakan adalah sensor PPG Max30102, dan model ini ditargetkan untuk berjalan pada perangkat keras Grove Vision AI V2 yang menggunakan arsitektur Cortex-M55 dan Ethos-U55.
 
 ## 2. Background
@@ -19,7 +21,7 @@ Estimasi detak jantung yang akurat menggunakan sensor PPG sangat penting untuk p
 Model KID-PPG dibangun di atas dataset publik bernama PPG-Dalia. Dataset ini dipilih karena sangat merepresentasikan kondisi noisy dari perekaman wearable device di dunia nyata.
 * **Subjek & Ukuran:** Melibatkan data dari 15 subjek berbeda yang melakukan berbagai aktivitas dinamis sehari-hari (seperti duduk, berjalan, bersepeda). Sinyal yang diambil biasanya berupa data PPG optik dan akselerometer 3-sumbu (3D).
 * **Label Target:** Jaringan saraf dilatih untuk memprediksi detak jantung aktual dalam satuan Beats Per Minute (BPM) secara terus-menerus.
-* **Strategi Evaluasi (Split):** Alih-alih membagi data secara acak, pelatihan memisahkan data berbasis subjek menggunakan metode Leave-One-Subject-Out (LOSO) atau Leave-One-Group-Out (LOGO). Model dilatih pada 14 subjek, lalu diuji pada 1 subjek sisanya agar benar-benar merepresentasikan kemampuan model terhadap "pengguna baru" yang belum pernah ia lihat.
+* **Strategi Evaluasi (Split):** Pelatihan memisahkan data berbasis subjek menggunakan metode Leave-One-Subject-Out (LOSO) atau Leave-One-Group-Out (LOGO). Model dilatih pada 14 subjek, lalu diuji pada 1 subjek sisanya agar benar-benar merepresentasikan kemampuan model terhadap data baru yang belum pernah dilihat.
 
 **PREPROCESSING**   
 Preprocessing data untuk model KID-PPG dilakukan dalam dua tahap, yaitu tahap training dan tahap inferensi.
@@ -32,7 +34,10 @@ Preprocessing data untuk model KID-PPG dilakukan dalam dua tahap, yaitu tahap tr
 * **Buffering:**
 
 ## 4. Model
-![architecture](Images/Architecture.png)  
+<p align="center">
+<img src="Images/Architecture.png" alt="architecture">
+</p>
+
 **Parameters Count:**~112K Parameters  
 **Input Shape:**[N, 256, 2]  
 **Training Configuration:** 
@@ -55,10 +60,16 @@ Preprocessing data untuk model KID-PPG dilakukan dalam dua tahap, yaitu tahap tr
     
 ### 6.1 Standart Metric Summary
 
-| Sensor | Model Arch | Input Shape | Params | MAC | Sram Used | Accuracy Metric | Cycles Total | Quantization |
-| :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
-| PPG | 1D-CNN 3 block | [1, 256, 2] | ~112K | 13,450,768 MAC | 26.91 KiB | MAE: 5.3 BPM | 629117 | INT8 |
+| Sensor | Model | Arch | Input Shape | Params | MAC | Sram Used | Accuracy Metric | Cycles Total | Quantization |
+| :--- | :--- | :--- |:--- | :--- | :--- | :--- | :--- | :--- | :--- |
+| PPG (Max30102)| KID-PPG (pruned + QAT)| 1D-CNN 3 block + Attention| [1, 256, 2] | ~112K | 13,450,768 MAC | 26.91 KiB | MAE: 5.3 BPM | 629117 | INT8 |
 
 ### 6.2 Deployment Notes
+**Metode quantization:** Quantization-Aware Training (QAT) diterapkan setelah pruning menggunakan tensorflow_model_optimization (TFMOT). Pruning dilakukan secara selektif hanya pada layer Conv1D dan Dense untuk menghindari inkompatibilitas dengan MultiHeadAttention. QAT juga diterapkan secara selektif (partial quantization) dengan alasan yang sama.
 
+**Toolchain:** TensorFlow Lite Converter dengan TFLITE_BUILTINS_INT8 + TFLITE_BUILTINS sebagai fallback. Verifikasi operator NPU menggunakan Arm Vela compiler.
+
+**Input shape:** Diubah dari dinamis (None) menjadi statis ([1, 256, 2]) dengan cara membungkus QAT model dalam tf.keras.Model baru yang memiliki tf.keras.Input dengan batch_size=1 eksplisit, sebelum konversi TFLite. Ini memungkinkan Vela compiler mengoptimalkan memory layout secara penuh.
 ## 7. Conclusion & Challenges
+
+</div>
