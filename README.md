@@ -60,6 +60,10 @@ Preprocessing data untuk model KID-PPG dilakukan dalam dua tahap, yaitu tahap tr
 | After Pruning| 5.7 | Fine-tune 20 epoch pada mixed dataset |
 | After QAT | 5.3 | Fine-tune 10 epoch, partial quantization |  
 
+Model baseline KID-PPG mencapai MAE 2.8 BPM, konsisten dengan hasil yang dilaporkan pada paper aslinya (2.85 BPM pada PPG-DaLiA). Setelah pruning dengan target sparsity 50% pada layer Conv1D dan Dense, MAE meningkat menjadi 5.7 BPM, degradasi sebesar 2.89 BPM. Degradasi ini dapat terjadi karena berkurangnya kapasitas representasi model akibat pemangkasan bobot, khususnya pada layer konvolusi yang berperan dalam ekstraksi fitur morfologi sinyal PPG.
+
+Penerapan QAT setelah pruning berhasil memulihkan sebagian akurasi, menurunkan MAE dari 5.7 menjadi 5.3 BPM. Perbaikan ini terjadi karena QAT memungkinkan model menyesuaikan bobotnya terhadap noise quantization INT8 selama fine-tuning, sehingga error akibat diskretisasi bobot dapat diminimalkan.
+
 ## 6. Deployment
     
 ### 6.1 Standart Metric Summary
