@@ -14,7 +14,7 @@
 Proyek ini bertujuan untuk mengimplementasikan model machine learning KID-PPG untuk mengestimasi detak jantung berdasarkan sinyal Photoplethysmography (PPG). Sensor yang digunakan adalah sensor PPG Max30102, dan model ini ditargetkan untuk berjalan pada perangkat keras Grove Vision AI V2 yang menggunakan arsitektur Cortex-M55 dan Ethos-U55.
 
 ## 2. Background
-Estimasi detak jantung yang akurat menggunakan sensor PPG sangat penting untuk pemantauan fisiologis yang berkelanjutan, namun sering kali terhambat oleh artefak gerakan (motion artifacts). Model KID-PPG mengatasi hal ini dengan memanfaatkan arsitektur deep learning berbasis mekanisme atensi (attention mechanism) untuk meningkatkan akurasi estimasi, terutama pada kondisi detak jantung tinggi
+Pemantauan heart rate secara kontinu dan non-invasif merupakan kebutuhan penting dalam aplikasi kesehatan wearable. Sensor PPG menjadi pilihan utama karena sifatnya yang non-invasif, murah, dan mudah diintegrasikan ke perangkat wearable. Tantangan utama dalam estimasi HR dari sinyal PPG adalah motion artifact (MA), yaitu noise yang dihasilkan oleh gerakan tubuh yang frekuensinya dapat overlap dengan frekuensi HR target (0.5–4 Hz). Dalam literatur, metrik evaluasi standar untuk task ini adalah Mean Absolute Error (MAE) dalam satuan BPM, dengan benchmark pada dataset PPG-DaLiA. Model state-of-the-art yang di-deploy di MCU seperti Q-PPG mencapai MAE 4.41 BPM dengan footprint 412 kB, sementara EnhancePPG mencapai MAE 3.54 BPM pada Cortex-M7. KID-PPG dipilih karena mencapai MAE 2.85 BPM pada PPG-DaLiA, terbaik di antara model reprodusibel yang tersedia secara publik, sekaligus memiliki arsitektur yang cukup ringan untuk dikompres ke target edge device
 
 ## 3. Dataset & Preprocessing
 **DATASET**   
@@ -52,6 +52,12 @@ Preprocessing data untuk model KID-PPG dilakukan dalam dua tahap, yaitu tahap tr
     * Fase Training Utama: Pelatihan model deep learning-nya ditetapkan maksimal hingga 500 epoch per subjek (menggunakan metode Cross-Validation LOSO).
 
 * Batch Size: Ditetapkan secara eksplisit sebesar 128 atau 256 sampel dalam setiap iterasi pembaruan bobot, memberikan keseimbangan yang baik antara pemanfaatan memori GPU dan kehalusan gradien.
+
+**Metode Optimasi:**
+* Pruning: proses menghapus neuron, bobot (weights), atau koneksi dalam jaringan saraf tiruan (neural network) yang dianggap kurang penting atau tidak berkontribusi banyak pada hasil prediksi model.
+
+* Quantization Aware Training (QAT): Proses mengubah format data dari floating-point (misalnya FP32) ke integer yang lebih rendah (misalnya INT8). Dalam metode  QAT, proses kuantisasi disimulasikan langsung selama fase pelatihan atau fine-tuning model menggunakan dataset lengkap. Dengan cara ini, model dapat beradaptasi dengan kesalahan (error) akibat pemotongan bit data sejak awal, sehingga model mampu menyesuaikan bobotnya agar akurasi akhir tetap terjaga mendekati model aslinya.
+
 
 ## 5. Results
 | Stage | MAE (BPM) | Catatan |
