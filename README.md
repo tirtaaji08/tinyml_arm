@@ -54,9 +54,10 @@ Preprocessing data untuk model KID-PPG dilakukan dalam dua tahap, yaitu tahap tr
 * Batch Size: Ditetapkan secara eksplisit sebesar 128 atau 256 sampel dalam setiap iterasi pembaruan bobot, memberikan keseimbangan yang baik antara pemanfaatan memori GPU dan kehalusan gradien.
 
 **Metode Optimasi:**
-* Pruning: proses menghapus neuron, bobot (weights), atau koneksi dalam jaringan saraf tiruan (neural network) yang dianggap kurang penting atau tidak berkontribusi banyak pada hasil prediksi model.
+* Pruning: proses menghapus neuron, bobot (weights), atau koneksi dalam jaringan saraf tiruan (neural network) yang dianggap kurang penting atau tidak berkontribusi banyak pada hasil prediksi model. Selective pruning dengan PolynomialDecay (sparsity 10%→50%) hanya pada layer Conv1D dan Dense; MultiHeadAttention tidak di-prune karena ketidakkompatibilan tensorflow_model_optimization (TFMOT).
 
-* Quantization Aware Training (QAT): Proses mengubah format data dari floating-point (misalnya FP32) ke integer yang lebih rendah (misalnya INT8). Dalam metode  QAT, proses kuantisasi disimulasikan langsung selama fase pelatihan atau fine-tuning model menggunakan dataset lengkap. Dengan cara ini, model dapat beradaptasi dengan kesalahan (error) akibat pemotongan bit data sejak awal, sehingga model mampu menyesuaikan bobotnya agar akurasi akhir tetap terjaga mendekati model aslinya.
+* Quantization Aware Training (QAT): Proses mengubah format data dari floating-point (misalnya FP32) ke integer yang lebih rendah (misalnya INT8). Dalam metode  QAT, proses kuantisasi disimulasikan langsung selama fase pelatihan atau fine-tuning model menggunakan dataset lengkap. Dengan cara ini, model dapat beradaptasi dengan kesalahan (error) akibat pemotongan bit data sejak awal, sehingga model mampu menyesuaikan bobotnya agar akurasi akhir tetap terjaga mendekati model aslinya. Pada model KID-PPG dilakukan QAT dengan quantize_annotate + quantize_apply secara selektif (layer Conv1D dan Dense), partial quantization pada layer attention.
+
 
 
 ## 5. Results
