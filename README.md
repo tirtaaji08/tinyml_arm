@@ -35,6 +35,11 @@ Preprocessing data untuk model KID-PPG dilakukan dalam dua tahap, yaitu tahap tr
 * **Buffering:**
 
 ## 4. Model
+<p align="center">
+  <img src="Images/Architecture.png" alt="Architecture">
+</p>
+
+
 **Parameters Count:** ~112K Parameters
 
 **Input Shape:** [N, 256, 2]
