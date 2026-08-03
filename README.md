@@ -60,7 +60,7 @@ Preprocessing data untuk model KID-PPG dilakukan dalam dua tahap, yaitu tahap tr
 
 | Stage | MAE (BPM) | Catatan |
 | :--- | :--- | :--- |
-| KID-PPG Original | 2.8 | Evaluasi via model h5.predict() pada PPG-DaLiA |
+| KID-PPG Original | 2.8 | Evaluasi via model_h5.predict() pada PPG-DaLiA |
 | After Pruning | 5.7 | Fine-tune 20 epoch pada mixed dataset |
 | After QAT | 5.3 | Fine-tune 10 epoch, partial quantization |
 
@@ -69,8 +69,8 @@ Penerapan QAT setelah pruning berhasil memulihkan sebagian akurasi, menurunkan M
 
 ## 6. Deployment
 ### 6.1 Standard Metric Summary
-| Sensor | Model Arch | Input Shape | Params | MAC | SRAM | Accuracy Metric | Cycles Total | Quantization |
-| :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
+| Sensor | Model | Arch | Input Shape | Params | MAC | SRAM |Accuracy Metric | Cycles Total | Quantization |
+| :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :---|
 | Max30102 | KID-PPG (Pruned + QAT) | 1D-CNN 3 block + Attention | [1, 256, 2] | ~112K | 13,450,768 MAC | 26.91 KiB | MAE: 5.3 BPM | 629117 | INT8 |
 
 ### 6.2 Deployment Notes
