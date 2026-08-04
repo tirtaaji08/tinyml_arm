@@ -30,6 +30,8 @@ Preprocessing data untuk model KID-PPG dilakukan dalam dua tahap, yaitu tahap tr
 * **Augmentasi Data:** Untuk mencegah class imbalance di mana sebagian besar dataset merepresentasikan detak jantung saat rileks/duduk, terdapat tahap injeksi data sintetis dan probabilistic augmentation serta pembuatan sampel detak jantung tinggi.
 
 #### b. Tahap Inferensi
+* **Filtering:** Sinyal mentah dari sensor MAX30102 didominasi oleh komponen DC (statis) yang berasal dari penyerapan cahaya oleh jaringan tubuh, tulang, dan darah vena, sehingga mengaburkan komponen AC (dinamis) yang merepresentasikan denyut jantung sesungguhnya. Penerapan filter berfungsi untuk membuang komponen DC, sehingga menyisakan gelombang denyut yang bersih.
+* **Inverse Sinyal:** Setelah komponen DC dihilangkan, sinyal tersebut harus diinversi karena mekanisme kerja sensor reflektansi MAX30102 menghasilkan data yang terbalik; saat jantung berdenyut (fase sistolik), volume darah meningkat dan menyerap lebih banyak cahaya, sehingga jumlah cahaya yang memantul ke sensor justru berkurang dan menciptakan lembah pada data mentah. Sementara itu, model KID-PPG dilatih menggunakan dataset PPG-DaLiA yang memiliki orientasi standar di mana fase sistolik diwakili oleh puncak positif yang mengarah ke atas
 * **Downsampling:**
 * **Z-Score Normalization:** Setiap segmen aktivitas diseragamkan magnitudonya dengan teknik Z-score. Proses ini mencabut rentang dinamik sinyal optik yang ekstrem dengan mengurangi nilai rata-rata dan membaginya dengan standar deviasi.
 * **Buffering:**
