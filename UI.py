@@ -5,11 +5,13 @@ import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 import numpy as np
 from collections import deque
+import time
 
 # ================= KONFIGURASI =================
 SERIAL_PORT = '/dev/ttyACM0'
 BAUDRATE = 921600
 WINDOW_SIZE = 300  # jumlah sampel raw yang ditampilkan (~6 detik di 50Hz)
+UI_UPDATE_INTERVAL= 2.0
 
 # ================= INISIALISASI =================
 raw_data = deque([0] * WINDOW_SIZE, maxlen=WINDOW_SIZE)
@@ -19,6 +21,8 @@ current_bpm = 0.0
 total_cycles = 0
 active_cycles = 0
 idle_cycles = 0
+
+last_ui_update = time.time()
 
 # Setup Serial
 try:
@@ -64,7 +68,7 @@ fig.text(0.02, 0.98, f'Connected to {SERIAL_PORT} @ {BAUDRATE} baud',
 
 # ================= FUNGSI UPDATE =================
 def update_plot(frame):
-    global current_bpm, total_cycles, active_cycles, idle_cycles, raw_data
+    global current_bpm, total_cycles, active_cycles, idle_cycles, raw_data, last_ui_update
 
     # Baca semua data yang tersedia di buffer serial
     while ser.in_waiting > 0:
@@ -94,10 +98,11 @@ def update_plot(frame):
                         current_bpm = float(part.split(':')[1])
                     elif part.startswith('T:'):
                         total_cycles = int(part.split(':')[1])
-                
+                """
                 # Update teks BPM dan Cycle
                 bpm_text.set_text(f'{current_bpm:.0f} BPM')
                 cycle_text.set_text(f'Total Cycles: {total_cycles}')
+                """
             except (ValueError, IndexError):
                 pass
 
@@ -118,8 +123,18 @@ def update_plot(frame):
         if range_val < 1:
             range_val = 1
         ax1.set_ylim(min_val - range_val*0.1, max_val + range_val*0.1)
+        
+    #return line, bpm_text, cycle_text
 
-    return line, bpm_text, cycle_text
+    #update BPM 2 detik sekali
+    now = time.time()
+    if now - last_ui_update >= UI_UPDATE_INTERVAL:
+        bpm_text.set_text(f'{current_bpm:.0f} BPM')
+        cycle_text.set_text(f'Total Cycles: {total_cycles}')
+        last_ui_update = now
+        return line, bpm_text, cycle_text
+    else :
+        return line, bpm_text, cycle_text
 
 # ================= JALANKAN =================
 ani = animation.FuncAnimation(fig, update_plot, interval=20, blit=True, save_count=100)
